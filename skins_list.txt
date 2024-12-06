@@ -5,7 +5,7 @@ skins/PoldixGG.png
 skins/hackercolin.png
 skins/AsaltaAbuelas.png
 skins/john_prodman.png
-skins/H1TLER.png
+skins/Wialend.png
 skins/Bomnrc.png
 skins/AduWasTaken.png
 skins/Scrubs.png
