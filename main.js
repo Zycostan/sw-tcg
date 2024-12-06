@@ -6,10 +6,18 @@ function getRandomStat(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+// Function to generate a random price between $0.10 and $1,000
+function getRandomPrice(min, max) {
+    const price = Math.random() * (max - min) + min;
+    return price.toFixed(2); // Format to 2 decimal places
+}
+
 // Function to create a card element
 function createCard(skinPath, fileName) {
     const attack = getRandomStat(10, 100);
     const defense = getRandomStat(10, 100);
+    const speed = getRandomStat(10, 100); // Randomized speed stat
+    const price = getRandomPrice(0.1, 1000); // Randomized price
 
     const card = document.createElement("div");
     card.className = "card";
@@ -29,6 +37,8 @@ function createCard(skinPath, fileName) {
     stats.innerHTML = `
         <div><strong>Attack:</strong> ${attack}</div>
         <div><strong>Defense:</strong> ${defense}</div>
+        <div><strong>Speed:</strong> ${speed}</div>
+        <div><strong>Price:</strong> $${price}</div>
     `;
     card.appendChild(stats);
 
