@@ -1,0 +1,137 @@
+/* General body styling */
+body {
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #fdfdfd;
+    color: #111;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+/* Header styling for the search bar */
+header {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0;
+    padding: 20px 0;
+    background-color: #ffffff;
+    border-bottom: 1px solid #e0e0e0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+header h1 {
+    font-size: 24px;
+    margin: 0;
+    color: #111;
+}
+
+#card-count {
+    font-size: 16px;
+    color: #555;
+    margin-top: 5px;
+}
+
+#search-bar {
+    width: 300px;
+    padding: 8px 12px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    margin-top: 10px;
+    transition: box-shadow 0.3s ease;
+}
+
+#search-bar:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.2);
+}
+
+/* Container for the cards */
+#card-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 16px;
+    padding: 20px;
+    margin-top: 20px; /* Ensures the cards are below the header */
+}
+
+/* Styling for each card */
+.card {
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    padding: 20px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Dynamic sizing for the skin image */
+.card img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    object-fit: contain;
+    margin-bottom: 10px;
+}
+
+/* Minimalist username styling */
+.card .username {
+    font-weight: 600;
+    font-size: 16px;
+    color: #111;
+    margin-bottom: 8px;
+}
+
+/* Clean stats styling */
+.card .stats {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 14px;
+}
+
+.card .stats div {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    color: #333;
+    font-weight: 500;
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 600px) {
+    #card-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .card {
+        width: 90%;
+    }
+
+    #search-bar {
+        width: 90%;
+    }
+}
