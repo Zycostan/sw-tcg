@@ -1,4 +1,4 @@
-// Path to the skins_list.txt file
+// Path to // Path to the skins_list.txt file
 const skinsListPath = "skins_list.txt";
 
 // Function to generate a random number within a range
@@ -25,6 +25,8 @@ function createCard(skinPath, fileName) {
 
     const img = document.createElement("img");
     img.src = skinPath;
+    img.loading = "lazy"; // Enable lazy loading
+    img.alt = `${fileName}'s skin`; // Add alt text for better accessibility
     card.appendChild(img);
 
     const username = document.createElement("div");
