@@ -8604,3 +8604,4 @@ skins/tigerscr.png
 skins/maybe_rio.png
 skins/NoDripPandora.png
 skins/Peepiceep.png
+skins/SpcWanderer.png
