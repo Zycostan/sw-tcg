@@ -1,4 +1,4 @@
-// Path to // Path to the skins_list.txt file
+// Path to skins list file
 const skinsListPath = "skins_list.txt";
 
 // Function to generate a random number within a range
@@ -8,8 +8,7 @@ function getRandomStat(min, max) {
 
 // Function to generate a random price between $0.10 and $1,000
 function getRandomPrice(min, max) {
-    const price = Math.random() * (max - min) + min;
-    return price.toFixed(2); // Format to 2 decimal places
+    return (Math.random() * (max - min) + min).toFixed(2); // Format to 2 decimal places
 }
 
 // Function to create a card element
@@ -49,42 +48,41 @@ function createCard(skinPath, fileName) {
 
 // Function to load skins
 async function loadSkins() {
+    const container = document.getElementById("card-container");
+    const searchBar = document.getElementById("search-bar");
+
     try {
         const response = await fetch(skinsListPath);
         if (!response.ok) throw new Error("Failed to load skins list");
 
-        const text = await response.text();
-        const skins = text.trim().split("\n");
+        const skins = (await response.text())
+            .trim()
+            .split("\n")
+            .map(skinPath => {
+                const fileName = skinPath.split("/").pop().split(".")[0]; // Extract username
+                const card = createCard(skinPath, fileName);
+                return card;
+            });
 
-        const container = document.getElementById("card-container");
-        skins.forEach((skinPath) => {
-            const fileName = skinPath.split("/").pop().split(".")[0]; // Extract username
-            const card = createCard(skinPath, fileName);
-            container.appendChild(card);
-        });
+        // Append all cards in one go for better performance
+        container.append(...skins);
 
         // Attach search functionality
-        setupSearch();
+        setupSearch(skins, searchBar);
     } catch (error) {
         console.error("Error loading skins:", error);
     }
 }
 
 // Function to set up search functionality
-function setupSearch() {
-    const searchBar = document.getElementById("search-bar");
-    const cards = document.querySelectorAll(".card");
-
+function setupSearch(cards, searchBar) {
     searchBar.addEventListener("input", (event) => {
         const query = event.target.value.toLowerCase();
 
+        // Use a simple loop to filter cards based on username
         cards.forEach((card) => {
             const username = card.dataset.username;
-            if (username.includes(query)) {
-                card.style.display = ""; // Show card
-            } else {
-                card.style.display = "none"; // Hide card
-            }
+            card.style.display = username.includes(query) ? "" : "none";
         });
     });
 }
