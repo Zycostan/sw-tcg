@@ -1,23 +1,43 @@
+// Path to the skins_list.txt and abilities_list.txt files
 const skinsListPath = "skins_list.txt";
 const abilitiesListPath = "abilities_list.txt";
+
+// Function to get a random ability from the fetched abilities list
+async function getRandomAbility() {
+    const abilities = await loadAbilities();
+    return abilities[Math.floor(Math.random() * abilities.length)];
+}
+
+// Function to load the abilities from the file
+async function loadAbilities() {
+    try {
+        const response = await fetch(abilitiesListPath);
+        if (!response.ok) throw new Error("Failed to load abilities list");
+
+        const text = await response.text();
+        const abilities = text.trim().split("\n").map(line => {
+            const [name, description] = line.split("|");
+            return { name: name.trim(), description: description.trim() };
+        });
+
+        return abilities;
+    } catch (error) {
+        console.error("Error loading abilities:", error);
+        return [];
+    }
+}
 
 // Function to generate a random number within a range
 function getRandomStat(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-// Function to generate a random price between $0.10 and $1,000
-function getRandomPrice(min, max) {
-    const price = Math.random() * (max - min) + min;
-    return price.toFixed(2); // Format to 2 decimal places
-}
-
 // Function to create a card element
-function createCard(skinPath, fileName, ability, description) {
+async function createCard(skinPath, fileName) {
     const attack = getRandomStat(10, 100);
     const defense = getRandomStat(10, 100);
     const speed = getRandomStat(10, 100);
-    const price = getRandomPrice(0.1, 1000);
+    const ability = await getRandomAbility(); // Fetch random ability
 
     const card = document.createElement("div");
     card.className = "card";
@@ -26,7 +46,6 @@ function createCard(skinPath, fileName, ability, description) {
     const img = document.createElement("img");
     img.src = skinPath;
     img.alt = `${fileName}'s skin`;
-    img.loading = "lazy";
     card.appendChild(img);
 
     const username = document.createElement("div");
@@ -40,48 +59,38 @@ function createCard(skinPath, fileName, ability, description) {
         <div><strong>Attack:</strong> ${attack}</div>
         <div><strong>Defense:</strong> ${defense}</div>
         <div><strong>Speed:</strong> ${speed}</div>
-        <div><strong>Price:</strong> $${price}</div>
     `;
     card.appendChild(stats);
 
-    const abilityInfo = document.createElement("div");
-    abilityInfo.className = "ability-info";
-    abilityInfo.innerHTML = `
-        <div><strong>Ability:</strong> ${ability}</div>
-        <div class="ability-description">${description}</div>
+    const abilityDescription = document.createElement("div");
+    abilityDescription.className = "ability-description";
+    abilityDescription.innerHTML = `
+        <div><strong>${ability.name}</strong></div>
+        <div>${ability.description}</div>
     `;
-    card.appendChild(abilityInfo);
+    card.appendChild(abilityDescription);
 
     return card;
 }
 
-// Function to load skins and abilities
-async function loadCards() {
+// Function to load skins from the file
+async function loadSkins() {
     try {
-        const skinsResponse = await fetch(skinsListPath);
-        const abilitiesResponse = await fetch(abilitiesListPath);
+        const response = await fetch(skinsListPath);
+        if (!response.ok) throw new Error("Failed to load skins list");
 
-        if (!skinsResponse.ok || !abilitiesResponse.ok) {
-            throw new Error("Failed to load files");
-        }
-
-        const skins = (await skinsResponse.text()).trim().split("\n");
-        const abilities = (await abilitiesResponse.text())
-            .trim()
-            .split("\n")
-            .map((line) => line.split(":"));
+        const text = await response.text();
+        const skins = text.trim().split("\n");
 
         const container = document.getElementById("card-container");
         skins.forEach((skinPath) => {
             const fileName = skinPath.split("/").pop().split(".")[0];
-            const [ability, description] = abilities[Math.floor(Math.random() * abilities.length)];
-            const card = createCard(skinPath, fileName, ability, description);
-            container.appendChild(card);
+            createCard(skinPath, fileName).then(card => container.appendChild(card));
         });
 
         setupSearch();
     } catch (error) {
-        console.error("Error loading cards:", error);
+        console.error("Error loading skins:", error);
     }
 }
 
@@ -90,14 +99,18 @@ function setupSearch() {
     const searchBar = document.getElementById("search-bar");
     const cards = document.querySelectorAll(".card");
 
+    let debounceTimeout;
     searchBar.addEventListener("input", (event) => {
-        const query = event.target.value.toLowerCase();
-        cards.forEach((card) => {
-            const username = card.dataset.username;
-            card.style.display = username.includes(query) ? "" : "none";
-        });
+        clearTimeout(debounceTimeout);
+        debounceTimeout = setTimeout(() => {
+            const query = event.target.value.toLowerCase();
+            cards.forEach((card) => {
+                const username = card.dataset.username;
+                card.style.display = username.includes(query) ? "" : "none";
+            });
+        }, 200);
     });
 }
 
-// Load cards on page load
-loadCards();
+// Load skins on page load
+loadSkins();
