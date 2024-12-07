@@ -1,4 +1,4 @@
-// Path to the skins_list.txt file
+// Path to // Path to the skins_list.txt file
 const skinsListPath = "skins_list.txt";
 
 // Function to generate a random number within a range
@@ -47,8 +47,8 @@ function createCard(skinPath, fileName) {
     return card;
 }
 
-// Function to load skins in batches
-async function loadSkins(batchSize = 10) {
+// Function to load skins
+async function loadSkins() {
     try {
         const response = await fetch(skinsListPath);
         if (!response.ok) throw new Error("Failed to load skins list");
@@ -57,36 +57,11 @@ async function loadSkins(batchSize = 10) {
         const skins = text.trim().split("\n");
 
         const container = document.getElementById("card-container");
-        let loadedCount = 0;
-
-        // Load a batch of skins
-        function loadBatch() {
-            const batch = skins.slice(loadedCount, loadedCount + batchSize);
-            batch.forEach((skinPath) => {
-                const fileName = skinPath.split("/").pop().split(".")[0]; // Extract username
-                const card = createCard(skinPath, fileName);
-                container.appendChild(card);
-            });
-            loadedCount += batch.length;
-            if (loadedCount < skins.length) {
-                // Check if more images need to be loaded when scrolling
-                checkIfNeedToLoadMore();
-            }
-        }
-
-        // Initially load the first batch
-        loadBatch();
-
-        // Attach scroll event to load more when scrolling near the bottom
-        function checkIfNeedToLoadMore() {
-            const scrollPosition = window.scrollY + window.innerHeight;
-            const pageHeight = document.documentElement.scrollHeight;
-            if (scrollPosition >= pageHeight - 200) { // 200px from the bottom
-                loadBatch();
-            }
-        }
-
-        window.addEventListener('scroll', checkIfNeedToLoadMore);
+        skins.forEach((skinPath) => {
+            const fileName = skinPath.split("/").pop().split(".")[0]; // Extract username
+            const card = createCard(skinPath, fileName);
+            container.appendChild(card);
+        });
 
         // Attach search functionality
         setupSearch();
@@ -95,33 +70,22 @@ async function loadSkins(batchSize = 10) {
     }
 }
 
-// Function to set up search functionality with debounce
+// Function to set up search functionality
 function setupSearch() {
     const searchBar = document.getElementById("search-bar");
     const cards = document.querySelectorAll(".card");
-    let timeoutId;
-
-    // Check if search bar exists
-    if (!searchBar) {
-        console.error("Search bar element not found.");
-        return;
-    }
 
     searchBar.addEventListener("input", (event) => {
-        clearTimeout(timeoutId); // Clear the previous timeout
         const query = event.target.value.toLowerCase();
 
-        timeoutId = setTimeout(() => {
-            cards.forEach((card) => {
-                const username = card.dataset.username;
-                // Check if username matches the query and show/hide the card accordingly
-                if (username.includes(query)) {
-                    card.style.display = ""; // Show card
-                } else {
-                    card.style.display = "none"; // Hide card
-                }
-            });
-        }, 300); // Delay search for 300ms after user stops typing
+        cards.forEach((card) => {
+            const username = card.dataset.username;
+            if (username.includes(query)) {
+                card.style.display = ""; // Show card
+            } else {
+                card.style.display = "none"; // Hide card
+            }
+        });
     });
 }
 
