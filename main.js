@@ -1,4 +1,3 @@
-// Path to the skins_list.txt and abilities_list.txt files
 const skinsListPath = "skins_list.txt";
 const abilitiesListPath = "abilities_list.txt";
 
@@ -17,17 +16,17 @@ function getRandomPrice(min, max) {
 function createCard(skinPath, fileName, ability, description) {
     const attack = getRandomStat(10, 100);
     const defense = getRandomStat(10, 100);
-    const speed = getRandomStat(10, 100); // Randomized speed stat
-    const price = getRandomPrice(0.1, 1000); // Randomized price
+    const speed = getRandomStat(10, 100);
+    const price = getRandomPrice(0.1, 1000);
 
     const card = document.createElement("div");
     card.className = "card";
-    card.dataset.username = fileName.toLowerCase(); // Add username for search filtering
+    card.dataset.username = fileName.toLowerCase();
 
     const img = document.createElement("img");
     img.src = skinPath;
-    img.loading = "lazy"; // Enable lazy loading
-    img.alt = `${fileName}'s skin`; // Add alt text for better accessibility
+    img.alt = `${fileName}'s skin`;
+    img.loading = "lazy";
     card.appendChild(img);
 
     const username = document.createElement("div");
@@ -42,78 +41,63 @@ function createCard(skinPath, fileName, ability, description) {
         <div><strong>Defense:</strong> ${defense}</div>
         <div><strong>Speed:</strong> ${speed}</div>
         <div><strong>Price:</strong> $${price}</div>
+    `;
+    card.appendChild(stats);
+
+    const abilityInfo = document.createElement("div");
+    abilityInfo.className = "ability-info";
+    abilityInfo.innerHTML = `
         <div><strong>Ability:</strong> ${ability}</div>
         <div class="ability-description">${description}</div>
     `;
-    card.appendChild(stats);
+    card.appendChild(abilityInfo);
 
     return card;
 }
 
 // Function to load skins and abilities
-async function loadContent() {
+async function loadCards() {
     try {
-        const [skinsResponse, abilitiesResponse] = await Promise.all([
-            fetch(skinsListPath),
-            fetch(abilitiesListPath),
-        ]);
+        const skinsResponse = await fetch(skinsListPath);
+        const abilitiesResponse = await fetch(abilitiesListPath);
 
-        if (!skinsResponse.ok) throw new Error("Failed to load skins list");
-        if (!abilitiesResponse.ok) throw new Error("Failed to load abilities list");
+        if (!skinsResponse.ok || !abilitiesResponse.ok) {
+            throw new Error("Failed to load files");
+        }
 
-        const skinsText = await skinsResponse.text();
-        const abilitiesText = await abilitiesResponse.text();
-
-        const skins = skinsText.trim().split("\n");
-        const abilities = abilitiesText
+        const skins = (await skinsResponse.text()).trim().split("\n");
+        const abilities = (await abilitiesResponse.text())
             .trim()
             .split("\n")
-            .map((line) => {
-                const [name, description] = line.split("|");
-                return { name, description };
-            });
+            .map((line) => line.split(":"));
 
         const container = document.getElementById("card-container");
         skins.forEach((skinPath) => {
-            const fileName = skinPath.split("/").pop().split(".")[0]; // Extract username
-            const randomAbility = abilities[Math.floor(Math.random() * abilities.length)];
-            const card = createCard(
-                skinPath,
-                fileName,
-                randomAbility.name,
-                randomAbility.description
-            );
+            const fileName = skinPath.split("/").pop().split(".")[0];
+            const [ability, description] = abilities[Math.floor(Math.random() * abilities.length)];
+            const card = createCard(skinPath, fileName, ability, description);
             container.appendChild(card);
         });
 
-        // Attach optimized search functionality
-        setupSearch(skins);
+        setupSearch();
     } catch (error) {
-        console.error("Error loading content:", error);
+        console.error("Error loading cards:", error);
     }
 }
 
-// Optimized search functionality using a debounce function
+// Function to set up search functionality
 function setupSearch() {
     const searchBar = document.getElementById("search-bar");
     const cards = document.querySelectorAll(".card");
 
-    let timeout;
     searchBar.addEventListener("input", (event) => {
-        clearTimeout(timeout);
-        timeout = setTimeout(() => {
-            const query = event.target.value.toLowerCase();
-            cards.forEach((card) => {
-                const username = card.dataset.username;
-                if (username.includes(query)) {
-                    card.style.display = ""; // Show card
-                } else {
-                    card.style.display = "none"; // Hide card
-                }
-            });
-        }, 300); // Debounce time to reduce lag
+        const query = event.target.value.toLowerCase();
+        cards.forEach((card) => {
+            const username = card.dataset.username;
+            card.style.display = username.includes(query) ? "" : "none";
+        });
     });
 }
 
-// Load skins and abilities on page load
-loadContent();
+// Load cards on page load
+loadCards();
