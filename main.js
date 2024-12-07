@@ -1,5 +1,6 @@
-// Path to // Path to the skins_list.txt file
+// Path to the skins_list.txt and abilities_list.txt files
 const skinsListPath = "skins_list.txt";
+const abilitiesListPath = "abilities_list.txt";
 
 // Function to generate a random number within a range
 function getRandomStat(min, max) {
@@ -13,7 +14,7 @@ function getRandomPrice(min, max) {
 }
 
 // Function to create a card element
-function createCard(skinPath, fileName) {
+function createCard(skinPath, fileName, ability, description) {
     const attack = getRandomStat(10, 100);
     const defense = getRandomStat(10, 100);
     const speed = getRandomStat(10, 100); // Randomized speed stat
@@ -41,53 +42,78 @@ function createCard(skinPath, fileName) {
         <div><strong>Defense:</strong> ${defense}</div>
         <div><strong>Speed:</strong> ${speed}</div>
         <div><strong>Price:</strong> $${price}</div>
+        <div><strong>Ability:</strong> ${ability}</div>
+        <div class="ability-description">${description}</div>
     `;
     card.appendChild(stats);
 
     return card;
 }
 
-// Function to load skins
-async function loadSkins() {
+// Function to load skins and abilities
+async function loadContent() {
     try {
-        const response = await fetch(skinsListPath);
-        if (!response.ok) throw new Error("Failed to load skins list");
+        const [skinsResponse, abilitiesResponse] = await Promise.all([
+            fetch(skinsListPath),
+            fetch(abilitiesListPath),
+        ]);
 
-        const text = await response.text();
-        const skins = text.trim().split("\n");
+        if (!skinsResponse.ok) throw new Error("Failed to load skins list");
+        if (!abilitiesResponse.ok) throw new Error("Failed to load abilities list");
+
+        const skinsText = await skinsResponse.text();
+        const abilitiesText = await abilitiesResponse.text();
+
+        const skins = skinsText.trim().split("\n");
+        const abilities = abilitiesText
+            .trim()
+            .split("\n")
+            .map((line) => {
+                const [name, description] = line.split("|");
+                return { name, description };
+            });
 
         const container = document.getElementById("card-container");
         skins.forEach((skinPath) => {
             const fileName = skinPath.split("/").pop().split(".")[0]; // Extract username
-            const card = createCard(skinPath, fileName);
+            const randomAbility = abilities[Math.floor(Math.random() * abilities.length)];
+            const card = createCard(
+                skinPath,
+                fileName,
+                randomAbility.name,
+                randomAbility.description
+            );
             container.appendChild(card);
         });
 
-        // Attach search functionality
-        setupSearch();
+        // Attach optimized search functionality
+        setupSearch(skins);
     } catch (error) {
-        console.error("Error loading skins:", error);
+        console.error("Error loading content:", error);
     }
 }
 
-// Function to set up search functionality
+// Optimized search functionality using a debounce function
 function setupSearch() {
     const searchBar = document.getElementById("search-bar");
     const cards = document.querySelectorAll(".card");
 
+    let timeout;
     searchBar.addEventListener("input", (event) => {
-        const query = event.target.value.toLowerCase();
-
-        cards.forEach((card) => {
-            const username = card.dataset.username;
-            if (username.includes(query)) {
-                card.style.display = ""; // Show card
-            } else {
-                card.style.display = "none"; // Hide card
-            }
-        });
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
+            const query = event.target.value.toLowerCase();
+            cards.forEach((card) => {
+                const username = card.dataset.username;
+                if (username.includes(query)) {
+                    card.style.display = ""; // Show card
+                } else {
+                    card.style.display = "none"; // Hide card
+                }
+            });
+        }, 300); // Debounce time to reduce lag
     });
 }
 
-// Load skins on page load
-loadSkins();
+// Load skins and abilities on page load
+loadContent();
