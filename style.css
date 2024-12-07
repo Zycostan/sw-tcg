@@ -10,6 +10,7 @@ body {
     align-items: center;
     font-size: 16px;
     line-height: 1.5;
+    overflow-x: hidden; /* Prevent horizontal overflow */
 }
 
 /* Header styling for the search bar */
@@ -76,15 +77,16 @@ header h1 {
     display: flex;
     flex-direction: column;
     align-items: center;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    position: relative;
-    z-index: 0;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transform: scale(0.95); /* Initial scale to prevent jitter */
+    opacity: 0; /* Hide initially */
+    visibility: hidden; /* Hide until fully loaded */
 }
 
-.card:hover {
-    transform: scale(1.2);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-    z-index: 10;
+.card.loaded {
+    transform: scale(1); /* Scale to normal size once loaded */
+    opacity: 1; /* Fade in */
+    visibility: visible; /* Make visible */
 }
 
 /* Dynamic sizing for the skin image */
@@ -104,26 +106,23 @@ header h1 {
     margin-bottom: 8px;
 }
 
-/* Stats section styling */
+/* Clean stats styling */
 .card .stats {
     width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
     font-size: 14px;
-    margin-bottom: 10px;
 }
 
-.card .ability-description {
-    display: none;
-    font-size: 14px;
-    color: #555;
-    text-align: center;
-    padding: 10px;
-    border-top: 1px solid #e0e0e0;
-    margin-top: 10px;
-}
-
-/* Show ability description on hover */
-.card:hover .ability-description {
-    display: block;
+.card .stats div {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    color: #333;
+    font-weight: 500;
 }
 
 /* Responsive design for smaller screens */
