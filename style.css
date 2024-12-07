@@ -10,7 +10,6 @@ body {
     align-items: center;
     font-size: 16px;
     line-height: 1.5;
-    overflow-x: hidden; /* Prevent horizontal overflow */
 }
 
 /* Header styling for the search bar */
@@ -63,7 +62,7 @@ header h1 {
     justify-content: center;
     gap: 16px;
     padding: 20px;
-    margin-top: 20px;
+    margin-top: 20px; /* Ensures the cards are below the header */
 }
 
 /* Styling for each card */
@@ -78,15 +77,11 @@ header h1 {
     flex-direction: column;
     align-items: center;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
-    transform: scale(0.95); /* Initial scale to prevent jitter */
-    opacity: 0; /* Hide initially */
-    visibility: hidden; /* Hide until fully loaded */
 }
 
-.card.loaded {
-    transform: scale(1); /* Scale to normal size once loaded */
-    opacity: 1; /* Fade in */
-    visibility: visible; /* Make visible */
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 /* Dynamic sizing for the skin image */
