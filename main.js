@@ -101,6 +101,12 @@ function setupSearch() {
     const cards = document.querySelectorAll(".card");
     let timeoutId;
 
+    // Check if search bar exists
+    if (!searchBar) {
+        console.error("Search bar element not found.");
+        return;
+    }
+
     searchBar.addEventListener("input", (event) => {
         clearTimeout(timeoutId); // Clear the previous timeout
         const query = event.target.value.toLowerCase();
@@ -108,6 +114,7 @@ function setupSearch() {
         timeoutId = setTimeout(() => {
             cards.forEach((card) => {
                 const username = card.dataset.username;
+                // Check if username matches the query and show/hide the card accordingly
                 if (username.includes(query)) {
                     card.style.display = ""; // Show card
                 } else {
