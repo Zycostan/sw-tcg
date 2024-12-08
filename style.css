@@ -3,8 +3,8 @@ body {
     font-family: 'Inter', sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #fdfdfd;
-    color: #111;
+    background-color: #f7f7f7;
+    color: #333;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -14,79 +14,135 @@ body {
 
 header {
     width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px 0;
-    background-color: #ffffff;
-    border-bottom: 1px solid #e0e0e0;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: center;
     position: sticky;
     top: 0;
     z-index: 1000;
 }
 
 header h1 {
-    font-size: 24px;
+    font-size: 28px;
     margin: 0;
     color: #111;
+    font-weight: 600;
 }
 
 #card-count {
-    font-size: 16px;
+    font-size: 14px;
     color: #555;
     margin-top: 5px;
 }
 
 #search-bar {
-    width: 300px;
-    padding: 8px 12px;
+    margin-top: 15px;
+    width: 100%;
+    max-width: 400px;
+    padding: 10px;
     font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    margin-top: 10px;
-    transition: box-shadow 0.3s ease;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background-color: #fafafa;
+    transition: box-shadow 0.3s ease, border-color 0.3s ease;
 }
 
 #search-bar:focus {
     outline: none;
     border-color: #007bff;
-    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.2);
+    box-shadow: 0 0 6px rgba(0, 123, 255, 0.3);
 }
 
-/* Container for the cards */
+/* Card container */
 #card-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 16px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+    width: 100%;
+    max-width: 1200px;
     padding: 20px;
     margin-top: 20px;
 }
 
+/* Card styling */
 .card {
-    background-color: #ffffff;
+    background-color: #fff;
     border: 1px solid #e0e0e0;
-    border-radius: 12px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-    padding: 20px;
+    border-radius: 10px;
+    padding: 15px;
     text-align: center;
     display: flex;
     flex-direction: column;
     align-items: center;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+    position: relative;
+    overflow: hidden;
 }
 
 .card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .card img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 8px;
-    object-fit: contain;
+    width: 120px;
+    height: 270px;
     margin-bottom: 10px;
+    object-fit: cover;
+    background-color: #f2f2f2;
+}
+
+/* Holographic effect */
+.card.holographic {
+    background: linear-gradient(
+        120deg,
+        rgba(255, 0, 255, 0.2),
+        rgba(0, 255, 255, 0.2),
+        rgba(255, 255, 0, 0.2),
+        rgba(0, 255, 0, 0.2)
+    );
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 0 20px rgba(255, 0, 255, 0.3), 0 0 30px rgba(0, 255, 255, 0.3);
+    animation: holographicShimmer 4s linear infinite;
+}
+
+.card.holographic::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        60deg,
+        rgba(255, 0, 255, 0.3),
+        rgba(0, 255, 255, 0.3),
+        rgba(255, 255, 0, 0.3),
+        rgba(0, 255, 0, 0.3)
+    );
+    opacity: 0.5;
+    filter: blur(30px);
+    z-index: -1;
+    animation: holographicOverlay 6s linear infinite;
+}
+
+@keyframes holographicShimmer {
+    0% {
+        background-position: 0% 0%;
+    }
+    100% {
+        background-position: 100% 100%;
+    }
+}
+
+@keyframes holographicOverlay {
+    0% {
+        transform: translate(-50%, -50%) rotate(0deg);
+    }
+    100% {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
 }
 
 .card .username {
@@ -96,102 +152,96 @@ header h1 {
     margin-bottom: 8px;
 }
 
-.card .stats {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    font-size: 14px;
-}
-
 .card .stats div {
-    display: flex;
-    justify-content: space-between;
-    padding: 8px;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    color: #333;
-    font-weight: 500;
+    font-size: 14px;
+    color: #555;
+    margin: 5px 0;
 }
 
-/* Modal container styles */
+/* Modal styling */
 .modal {
-    display: none; /* Hidden by default */
+    display: none;
     position: fixed;
-    top: 0;
+    z-index: 1000;
     left: 0;
+    top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent background */
-    z-index: 1000; /* Ensure it's on top */
-    overflow: auto; /* Enable scrolling if needed */
+    background-color: rgba(0, 0, 0, 0.5);
+    align-items: center;
+    justify-content: center;
 }
 
-/* Modal content */
 .modal-content {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%); /* Centers the modal */
-    background-color: white;
+    background-color: #fff;
     padding: 20px;
-    width: 50%; /* Adjust size of the modal */
-    max-width: 600px; /* Max width */
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    max-width: 400px;
     text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    animation: fadeIn 0.3s ease-out;
+    position: relative;
+    overflow: hidden;
+}
+
+.modal-content img {
+    width: 120px;
+    height: 270px;
+    margin-bottom: 15px;
+    object-fit: cover;
+}
+
+.modal-content.holographic {
+    background: linear-gradient(
+        45deg,
+        rgba(255, 0, 255, 0.2),
+        rgba(0, 255, 255, 0.2),
+        rgba(255, 255, 0, 0.2),
+        rgba(0, 255, 0, 0.2)
+    );
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 0 20px rgba(255, 0, 255, 0.3), 0 0 30px rgba(0, 255, 255, 0.3);
+    animation: holographicShimmer 4s linear infinite;
+}
+
+.modal-content.holographic::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        60deg,
+        rgba(255, 0, 255, 0.3),
+        rgba(0, 255, 255, 0.3),
+        rgba(255, 255, 0, 0.3),
+        rgba(0, 255, 0, 0.3)
+    );
+    opacity: 0.4;
+    filter: blur(20px);
+    animation: holographicOverlay 6s linear infinite;
+    z-index: -1;
 }
 
 .close-button {
     position: absolute;
     top: 10px;
     right: 10px;
-    font-size: 24px;
-    font-weight: bold;
-    cursor: pointer;
+    font-size: 20px;
     color: #555;
-    transition: color 0.3s ease;
+    cursor: pointer;
+    border: none;
+    background: none;
 }
 
-.close-button:hover {
-    color: #000;
-}
-
-.modal-skin-container {
-    width: 150px;
-    height: 150px;
-    margin: 0 auto 20px;
-    perspective: 1000px;
-}
-
-.modal-skin {
-    width: 100%;
-    height: 100%;
-    background-size: cover;
-    border-radius: 50%;
-    animation: spin 2s linear infinite;
-}
-
-@keyframes spin {
+@keyframes fadeIn {
     from {
-        transform: rotateY(0deg);
+        opacity: 0;
+        transform: scale(0.95);
     }
     to {
-        transform: rotateY(360deg);
+        opacity: 1;
+        transform: scale(1);
     }
-}
-
-/* Price styling */
-.card .price {
-    font-weight: 600;
-    font-size: 14px;
-    color: #111;
-    margin-top: 10px;
-}
-
-.modal-price {
-    font-weight: 600;
-    font-size: 16px;
-    color: #111;
-    margin-top: 10px;
 }

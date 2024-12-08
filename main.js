@@ -7,9 +7,11 @@ function getRandomStat(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-// Function to generate a random price between 1 and 500
-function getRandomPrice(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
+// Function to generate a random price between $0.1 and $1000
+function getRandomPrice() {
+    const minPrice = 0.1;
+    const maxPrice = 1000;
+    return (Math.random() * (maxPrice - minPrice) + minPrice).toFixed(2);
 }
 
 // Function to fetch abilities from the abilities_list.txt file
@@ -25,16 +27,20 @@ async function fetchAbilities() {
     }
 }
 
-// Function to create a card element with randomized price
-function createCard(skinPath, fileName, ability) {
-    const attack = getRandomStat(10, 100);
-    const defense = getRandomStat(10, 100);
-    const speed = getRandomStat(10, 100); // Randomized speed stat
-    const price = getRandomPrice(1, 500); // Randomized price between 1 and 500
+// Function to generate a random rarity (common, rare, holographic)
+function getRandomRarity() {
+    const rarities = ['common', 'rare', 'holographic'];
+    return rarities[Math.floor(Math.random() * rarities.length)];
+}
 
+// Function to create a card element
+function createCard(skinPath, fileName, ability, attack, defense, speed, rarity, price) {
     const card = document.createElement("div");
-    card.className = "card";
+    card.className = `card ${rarity}`; // Add rarity class (common, rare, holographic)
     card.dataset.username = fileName.toLowerCase(); // Add username for search filtering
+    card.dataset.attack = attack;
+    card.dataset.defense = defense;
+    card.dataset.speed = speed;
 
     const img = document.createElement("img");
     img.src = skinPath;
@@ -61,49 +67,13 @@ function createCard(skinPath, fileName, ability) {
     abilityElement.textContent = ability || "No Ability";
     card.appendChild(abilityElement);
 
+    // Add price element
     const priceElement = document.createElement("div");
     priceElement.className = "price";
-    priceElement.textContent = `$${price}`; // Display the price
+    priceElement.textContent = `$${price}`; // Display price with a dollar sign
     card.appendChild(priceElement);
 
-    // Add click event to open the modal
-    card.addEventListener("click", () => openModal(skinPath, fileName, ability, attack, defense, speed, price));
-
     return card;
-}
-
-// Function to open the modal with player details, including price
-function openModal(skinPath, fileName, ability, attack, defense, speed, price) {
-    const modal = document.getElementById("card-modal");
-    const modalSkin = modal.querySelector(".modal-skin");
-    const modalUsername = modal.querySelector(".modal-username");
-    const modalAbility = modal.querySelector(".modal-ability");
-    const modalAttack = modal.querySelector(".modal-attack");
-    const modalDefense = modal.querySelector(".modal-defense");
-    const modalSpeed = modal.querySelector(".modal-speed");
-    const modalPrice = modal.querySelector(".modal-price"); // New element for price
-
-    modalSkin.src = skinPath; // Set the skin image in the modal
-    modalUsername.textContent = fileName; // Set username in the modal
-    modalAbility.textContent = ability || "No Ability"; // Set ability name
-    modalAttack.textContent = attack; // Set attack stat
-    modalDefense.textContent = defense; // Set defense stat
-    modalSpeed.textContent = speed; // Set speed stat
-    modalPrice.textContent = `$${price}`; // Set price in the modal
-
-    // Show the modal
-    modal.style.display = "block";
-
-    // Add event listener to close the modal
-    const closeButton = modal.querySelector(".close-button");
-    closeButton.onclick = () => modal.style.display = "none";
-
-    // Close modal when clicking outside the modal content
-    window.onclick = (event) => {
-        if (event.target === modal) {
-            modal.style.display = "none";
-        }
-    };
 }
 
 // Function to load skins and abilities
@@ -122,7 +92,12 @@ async function loadSkins() {
         const cards = skins.map((skinPath, index) => {
             const fileName = skinPath.split("/").pop().split(".")[0]; // Extract username
             const ability = abilities[index % abilities.length]; // Assign abilities in a loop
-            return createCard(skinPath, fileName, ability);
+            const attack = getRandomStat(10, 100);
+            const defense = getRandomStat(10, 100);
+            const speed = getRandomStat(10, 100);
+            const rarity = getRandomRarity(); // Assign rarity to the card
+            const price = getRandomPrice(); // Assign price to the card
+            return createCard(skinPath, fileName, ability, attack, defense, speed, rarity, price);
         });
 
         // Sort cards alphabetically by username
@@ -135,17 +110,17 @@ async function loadSkins() {
         // Append sorted cards to the container
         cards.forEach((card) => container.appendChild(card));
 
-        // Attach search functionality
-        setupSearch();
+        // Attach search and filter functionality
+        setupSearch(cards);
+        setupFilters(cards);
     } catch (error) {
         console.error("Error loading skins:", error);
     }
 }
 
 // Function to set up search functionality
-function setupSearch() {
+function setupSearch(cards) {
     const searchBar = document.getElementById("search-bar");
-    const cards = document.querySelectorAll(".card");
 
     searchBar.addEventListener("input", (event) => {
         const query = event.target.value.toLowerCase();
@@ -158,6 +133,50 @@ function setupSearch() {
                 card.style.display = "none"; // Hide card
             }
         });
+    });
+}
+
+// Function to set up filter functionality
+function setupFilters(cards) {
+    const attackFilter = document.getElementById("filter-attack");
+    const defenseFilter = document.getElementById("filter-defense");
+    const speedFilter = document.getElementById("filter-speed");
+
+    const attackValueDisplay = document.getElementById("attack-value");
+    const defenseValueDisplay = document.getElementById("defense-value");
+    const speedValueDisplay = document.getElementById("speed-value");
+
+    // Filter by attack stat
+    attackFilter.addEventListener("input", (event) => {
+        const value = event.target.value;
+        attackValueDisplay.textContent = value;
+        filterCards(cards, value, "attack");
+    });
+
+    // Filter by defense stat
+    defenseFilter.addEventListener("input", (event) => {
+        const value = event.target.value;
+        defenseValueDisplay.textContent = value;
+        filterCards(cards, value, "defense");
+    });
+
+    // Filter by speed stat
+    speedFilter.addEventListener("input", (event) => {
+        const value = event.target.value;
+        speedValueDisplay.textContent = value;
+        filterCards(cards, value, "speed");
+    });
+}
+
+// Function to filter cards based on selected stat value
+function filterCards(cards, value, stat) {
+    cards.forEach((card) => {
+        const statValue = parseInt(card.dataset[stat]);
+        if (statValue >= value) {
+            card.style.display = "";
+        } else {
+            card.style.display = "none";
+        }
     });
 }
 
