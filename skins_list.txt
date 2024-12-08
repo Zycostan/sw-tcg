@@ -8618,3 +8618,5 @@ skins/Wimmmble.png
 skins/ZMW7.png
 skins/Nik907.png
 skins/BADEU0.png
+skins/Endbourne.png
+skins/isweariamsteve.png

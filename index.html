@@ -9,11 +9,24 @@
 <body>
     <header>
         <h1>Stoneworks TCG</h1>
-        <p id="card-count">Featuring 8,620 of you dumbasses</p>
+        <p id="card-count">Featuring 8,622 of you dumbasses</p>
         <input type="text" id="search-bar" placeholder="Search for a player...">
     </header>
 
-    <div id="card-container">
+    <div id="card-container"></div>
+
+    <!-- Modal for Player Details -->
+    <div id="card-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <img class="modal-skin" src="" alt="Player Skin">
+            <div class="modal-username"></div>
+            <div class="modal-ability"></div>
+            <div class="modal-attack"></div>
+            <div class="modal-defense"></div>
+            <div class="modal-speed"></div>
+            <div class="modal-price"></div> <!-- Display price here -->
+        </div>
     </div>
 
     <script src="main.js"></script>

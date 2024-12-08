@@ -12,13 +12,11 @@ body {
     line-height: 1.5;
 }
 
-/* Header styling for the search bar */
 header {
     width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin: 0;
     padding: 20px 0;
     background-color: #ffffff;
     border-bottom: 1px solid #e0e0e0;
@@ -62,10 +60,9 @@ header h1 {
     justify-content: center;
     gap: 16px;
     padding: 20px;
-    margin-top: 20px; /* Ensures the cards are below the header */
+    margin-top: 20px;
 }
 
-/* Styling for each card */
 .card {
     background-color: #ffffff;
     border: 1px solid #e0e0e0;
@@ -84,7 +81,6 @@ header h1 {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-/* Dynamic sizing for the skin image */
 .card img {
     max-width: 100%;
     height: auto;
@@ -93,7 +89,6 @@ header h1 {
     margin-bottom: 10px;
 }
 
-/* Minimalist username styling */
 .card .username {
     font-weight: 600;
     font-size: 16px;
@@ -101,7 +96,6 @@ header h1 {
     margin-bottom: 8px;
 }
 
-/* Clean stats styling */
 .card .stats {
     width: 100%;
     display: flex;
@@ -120,18 +114,84 @@ header h1 {
     font-weight: 500;
 }
 
-/* Responsive design for smaller screens */
-@media (max-width: 600px) {
-    #card-container {
-        flex-direction: column;
-        align-items: center;
-    }
+/* Modal container styles */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent background */
+    z-index: 1000; /* Ensure it's on top */
+    overflow: auto; /* Enable scrolling if needed */
+}
 
-    .card {
-        width: 90%;
-    }
+/* Modal content */
+.modal-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* Centers the modal */
+    background-color: white;
+    padding: 20px;
+    width: 50%; /* Adjust size of the modal */
+    max-width: 600px; /* Max width */
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
 
-    #search-bar {
-        width: 90%;
+.close-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #555;
+    transition: color 0.3s ease;
+}
+
+.close-button:hover {
+    color: #000;
+}
+
+.modal-skin-container {
+    width: 150px;
+    height: 150px;
+    margin: 0 auto 20px;
+    perspective: 1000px;
+}
+
+.modal-skin {
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    border-radius: 50%;
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotateY(0deg);
     }
+    to {
+        transform: rotateY(360deg);
+    }
+}
+
+/* Price styling */
+.card .price {
+    font-weight: 600;
+    font-size: 14px;
+    color: #111;
+    margin-top: 10px;
+}
+
+.modal-price {
+    font-weight: 600;
+    font-size: 16px;
+    color: #111;
+    margin-top: 10px;
 }
