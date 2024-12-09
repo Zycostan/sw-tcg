@@ -7,11 +7,36 @@ function getRandomStat(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-// Function to generate a random price between $0.1 and $1000
-function getRandomPrice() {
-    const minPrice = 0.1;
-    const maxPrice = 1000;
-    return (Math.random() * (maxPrice - minPrice) + minPrice).toFixed(2);
+// Function to format large numbers as "K" for thousand and "M" for million
+function formatNumber(number) {
+    if (number >= 1000000) {
+        return (number / 1000000).toFixed(1) + 'M'; // Format as millions
+    } else if (number >= 1000) {
+        return (number / 1000).toFixed(1) + 'K'; // Format as thousands
+    }
+    return number.toFixed(0); // Return as is for smaller numbers
+}
+
+// Function to calculate price based on stats and ability, with bonus for holographic
+function calculatePrice(attack, defense, speed, ability, rarity) {
+    const basePrice = (attack + defense + speed) / 3; // Average stat value
+    let price = basePrice * 10; // Scale the base price
+
+    // Increase price if the ability is special or rare
+    if (ability && ability.includes("legendary")) { // Example condition, adjust as needed
+        price *= 1.5; // Increase price by 50% for legendary abilities
+    }
+
+    // Apply bonus for holographic rarity
+    if (rarity === 'holographic') {
+        price *= 2; // Double the price for holographic cards
+    }
+
+    // Ensure price is within the $0.1 to $1000 range
+    price = Math.min(Math.max(price, 0.1), 5275000);
+
+    // Format the price with "K" or "M" if necessary
+    return formatNumber(price); // Return formatted price
 }
 
 // Function to fetch abilities from the abilities_list.txt file
@@ -34,7 +59,7 @@ function getRandomRarity() {
 }
 
 // Function to create a card element
-function createCard(skinPath, fileName, ability, attack, defense, speed, rarity, price) {
+function createCard(skinPath, fileName, ability, attack, defense, speed, rarity) {
     const card = document.createElement("div");
     card.className = `card ${rarity}`; // Add rarity class (common, rare, holographic)
     card.dataset.username = fileName.toLowerCase(); // Add username for search filtering
@@ -55,7 +80,7 @@ function createCard(skinPath, fileName, ability, attack, defense, speed, rarity,
 
     const stats = document.createElement("div");
     stats.className = "stats";
-    stats.innerHTML = `
+    stats.innerHTML = ` 
         <div><strong>Attack:</strong> ${attack}</div>
         <div><strong>Defense:</strong> ${defense}</div>
         <div><strong>Speed:</strong> ${speed}</div>
@@ -66,6 +91,9 @@ function createCard(skinPath, fileName, ability, attack, defense, speed, rarity,
     abilityElement.className = "ability";
     abilityElement.textContent = ability || "No Ability";
     card.appendChild(abilityElement);
+
+    // Calculate price based on stats, ability, and rarity
+    const price = calculatePrice(attack, defense, speed, ability, rarity);
 
     // Add price element
     const priceElement = document.createElement("div");
@@ -96,8 +124,7 @@ async function loadSkins() {
             const defense = getRandomStat(10, 100);
             const speed = getRandomStat(10, 100);
             const rarity = getRandomRarity(); // Assign rarity to the card
-            const price = getRandomPrice(); // Assign price to the card
-            return createCard(skinPath, fileName, ability, attack, defense, speed, rarity, price);
+            return createCard(skinPath, fileName, ability, attack, defense, speed, rarity);
         });
 
         // Sort cards alphabetically by username
