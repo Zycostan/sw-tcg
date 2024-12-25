@@ -1,1 +1,1 @@
-A simple HTML/JS/CSS starter template
+My ass is not doing this again
